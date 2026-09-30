@@ -11,8 +11,24 @@ from .forms import MovieForm
 def movie_list(request):
     movies = Movie.objects.filter(owner=request.user)
 
+    status = request.GET.get('status')
+    genre = request.GET.get('genre')
+
+    if status:
+        movies = movies.filter(status=status)
+
+    if genre:
+        movies = movies.filter(genre=genre)
+
+    genres = Movie.objects.filter(
+        owner=request.user
+    ).values_list('genre', flat=True).distinct()
+
     return render(request, 'movies/movie_list.html', {
-        'movies': movies
+        'movies': movies,
+        'genres': genres,
+        'selected_status': status,
+        'selected_genre': genre,
     })
 
 
